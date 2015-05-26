@@ -2,7 +2,7 @@
 Change `HOST` in `send_ips_to_me.py` to you server host.
 
 ```shell
-sudo sh install.sh
+sudo ./install.sh
 ```
 
 #Usage
@@ -11,5 +11,5 @@ Restart your client or `nohup send_ips_to_me.py &`
 
 ##Server
 ```shell
-python listenServer.py
+./listenServer.py
 ```
