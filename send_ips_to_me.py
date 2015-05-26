@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import sys
 import time
 import requests
 
@@ -20,11 +21,20 @@ def get_ips():
 
     return os.popen(CMD).read().split()
 
+def get_users():
+    FILTER = "_|#|nobody|daemon|bin|sys|sync|games|man|lp|mail|news|uucp|proxy|www-data|backup|list|irc|gnats|libuuid|syslog|messagebus|landscape|sshd|colord|redis|hduser|hadoop|Guest|macports"
+
+    if sys.platform == "linux" or sys.platform == "linux2":
+        CMD = 'cut -d: -f1 /etc/passwd | egrep -v "%s"' % FILTER
+    elif sys.platform == "darwin":
+        CMD = 'dscl . list /Users | egrep -v "%s"' % FILTER
+    return os.popen(CMD).read().split()
+
 def main():
     URL = "http://%s:%d" % (HOST, PORT)
 
-    who = os.popen('whoami').read().strip()
-    data = {'who': who}
+    users = get_users()
+    data = {'Users': users}
 
     while True:
         try:
