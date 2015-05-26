@@ -9,6 +9,9 @@ PORT = 8000
 INTERVAL = 60
 
 
+def sh(cmd):
+    return os.popen(cmd).read()
+
 def get_ips():
     CMD = '''#!/bin/sh
     re="\d+\.\d+\.\d+\.\d+"
@@ -19,16 +22,18 @@ def get_ips():
         echo $ip
     done'''
 
-    return os.popen(CMD).read().split()
+    return sh(CMD).split()
 
 def get_users():
     FILTER = "_|#|nobody|daemon|bin|sys|sync|games|man|lp|mail|news|uucp|proxy|www-data|backup|list|irc|gnats|libuuid|syslog|messagebus|landscape|sshd|colord|redis|hduser|hadoop|Guest|macports"
 
-    if sys.platform == "linux" or sys.platform == "linux2":
+    if sys.platform.startswith("linux"):
         CMD = 'cut -d: -f1 /etc/passwd | egrep -v "%s"' % FILTER
-    elif sys.platform == "darwin":
+    elif sys.platform.startswith("darwin"):
         CMD = 'dscl . list /Users | egrep -v "%s"' % FILTER
-    return os.popen(CMD).read().split()
+    else:
+        CMD = 'who am i | cut -d" " -f 1'
+    return sh(CMD).split()
 
 def main():
     URL = "http://%s:%d" % (HOST, PORT)
