@@ -4,7 +4,8 @@ import sys
 import time
 import requests
 
-HOST = "ip.loggerhead.me"
+HOST = "127.0.0.1"
+#HOST = "ip.loggerhead.me"
 PORT = 8000
 INTERVAL = 60
 
@@ -23,6 +24,9 @@ def get_ips():
     done'''
 
     return sh(CMD).split()
+
+# TODO: get broadcast
+
 
 def get_users():
     FILTER = "_|#|nobody|daemon|bin|sys|sync|games|man|lp|mail|news|uucp|proxy|www-data|backup|list|irc|gnats|libuuid|syslog|messagebus|landscape|sshd|colord|redis|hduser|hadoop|Guest|macports"

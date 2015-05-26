@@ -1,30 +1,46 @@
 #!/usr/bin/env python
 
-import SimpleHTTPServer
-import SocketServer
-import urlparse
 import sys
+import urlparse
+import SocketServer
+import SimpleHTTPServer
 
 
 class HttpServer:
     class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
-        def do_GET(self):
-            SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
-            print self.headers
-            print
-
-        def do_POST(self):
+        def before(self):
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
+            ip, port = self.request.getpeername()
             print self.headers
+            print "Request IP: %s:%d" % (ip, port)
 
+        def after(self):
+            print '-' * 40
+
+        def do_GET(self):
+            self.before()
+            self.after()
+
+        def do_POST(self):
+            self.before()
+            self.print_post_data()
+            self.after()
+
+        def print_post_data(self):
             length = int(self.headers['Content-Length'])
-            post_data = urlparse.parse_qs(self.rfile.read(length).decode('utf-8'))
-            for key, value in post_data.iteritems():
-                print "%s: %s" % (key, " ".join(value))
-            print
+            post_data = self.rfile.read(length).decode('utf-8')
+            if not post_data:
+                return
+
+            pairs = urlparse.parse_qs(post_data)
+            if pairs:
+                for key, value in pairs.iteritems():
+                    print "%s: %s" % (key, " ".join(value))
+            else:
+                print post_data
 
 
     def __init__(self):
@@ -41,13 +57,14 @@ class HttpServer:
         self.httpd = SocketServer.TCPServer((self.host, self.port), HttpServer.ServerHandler)
 
     def run(self):
-        print "Serving at: http://%(interface)s:%(port)s" % dict(interface=self.host, port=self.port)
+        print "Serving at: http://%s:%d" % (self.host, self.port)
         print '-' * 40
 
         try:
             self.httpd.serve_forever()
         except KeyboardInterrupt as e:
             pass
+
 
 if __name__ == "__main__":
     HttpServer().run()
