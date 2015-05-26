@@ -6,7 +6,8 @@ if [[ -z $1 ]]; then
 
     platform=`uname`
     if [[ "$platform" == 'Linux' ]]; then
-        cp send_ips_to_me.py /etc/rc.local
+        cp send_ips_to_me.py /etc/init.d
+        ln -s /etc/init.d/send_ips_to_me.py /etc/rc3.d/S99send_ips_to_me.py
     # OS X
     elif [[ "$platform" == 'Darwin' ]]; then
         cp me.to.ips.send.plist /Library/LaunchDaemons
