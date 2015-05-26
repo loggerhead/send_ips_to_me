@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 import os
 import time
-import shutil
-import inspect
 import requests
 
 HOST = "ip.loggerhead.me"
 PORT = 8000
 INTERVAL = 60
-
-__source_path__ = os.path.abspath(inspect.getsourcefile(lambda:0))
 
 
 def get_ips():
@@ -23,16 +19,6 @@ def get_ips():
     done'''
 
     return os.popen(CMD).read().split()
-
-def copy_to_dst(dst):
-    curdir = os.path.abspath(os.path.curdir)
-    if curdir == dst:
-        return
-
-    try:
-        shutil.copy2(__source_path__, dst)
-    except:
-        pass
 
 def main():
     URL = "http://%s:%d" % (HOST, PORT)
@@ -52,7 +38,6 @@ def main():
 
 
 try:
-    copy_to_dst('/usr/local/bin')
     main()
 except KeyboardInterrupt:
     pass
